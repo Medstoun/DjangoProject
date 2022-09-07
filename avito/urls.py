@@ -16,15 +16,22 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+from rest_framework import routers
+
 from ads import views
 from ads.views import ads as ads_view
 from ads.views import category as cat_view
 from ads.views import users as users_view
-
+from ads.views import locations as location_views
 from ads.views.service import root
 
+router = routers.SimpleRouter()
+router.register('location', location_views.LocationViewSet)
+
+
 urlpatterns = [
+    path('api-auth/', include('rest_framework.urls')),
     path('admin/', admin.site.urls),
     path('', root),
 
@@ -42,7 +49,12 @@ urlpatterns = [
     path('ad/<int:pk>/upload_image/', ads_view.AdUploadImageView.as_view()),
 
     path('user/', users_view.UserListView.as_view()),
+    path('user/<int:pk>', users_view.UserDetailView.as_view()),
+    path('user/<int:pk>/update', users_view.UserUpdateView.as_view()),
+    path('user/create/', users_view.UserCreateView.as_view())
 ]
+
+urlpatterns += router.urls
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
