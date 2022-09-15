@@ -18,13 +18,14 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
-
 from ads import views
 from ads.views import ads as ads_view
 from ads.views import category as cat_view
 from ads.views import users as users_view
+from ads.views import selection as selection_view
 from ads.views import locations as location_views
 from ads.views.service import root
+from rest_framework_simplejwt.views import TokenRefreshView, TokenObtainPairView
 
 router = routers.SimpleRouter()
 router.register('location', location_views.LocationViewSet)
@@ -51,7 +52,16 @@ urlpatterns = [
     path('user/', users_view.UserListView.as_view()),
     path('user/<int:pk>', users_view.UserDetailView.as_view()),
     path('user/<int:pk>/update', users_view.UserUpdateView.as_view()),
-    path('user/create/', users_view.UserCreateView.as_view())
+    path('user/create/', users_view.UserCreateView.as_view()),
+
+
+    path('user/token/', TokenObtainPairView.as_view()),
+    path('user/token/refresh/', TokenRefreshView.as_view()),
+
+    path('selection/', selection_view.SelectionListView.as_view()),
+    path('selection/<int:pk>', selection_view.SelectionDetailView.as_view()),
+    path('selection/create/', selection_view.SelectionCreateView.as_view()),
+    path('selection/<int:pk>/update', selection_view.SelectionUpdateView.as_view()),
 ]
 
 urlpatterns += router.urls
