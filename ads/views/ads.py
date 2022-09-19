@@ -7,11 +7,11 @@ from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import DetailView, ListView, CreateView, UpdateView, DeleteView
-from rest_framework.generics import ListAPIView, RetrieveAPIView, UpdateAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView, UpdateAPIView, CreateAPIView
 from rest_framework.permissions import IsAuthenticated
 
 from ads.permissions import AdUpdateDeletePermission
-from ads.serializers import AdSerializer
+from ads.serializers import AdSerializer, AdCreateSerializer
 from ads.models import Category, Ad
 
 from ads.models import User
@@ -83,6 +83,11 @@ class AdDetailView(RetrieveAPIView):
     permission_classes = [IsAuthenticated]
 
 
+# class AdCreateView(CreateAPIView):
+#     queryset = Ad.objects.all()
+#     serializer_class = AdCreateSerializer
+
+
 @method_decorator(csrf_exempt, name='dispatch')
 class AdCreateView(CreateView):
     model = Ad
@@ -90,7 +95,8 @@ class AdCreateView(CreateView):
 
     def post(self, request, *args, **kwargs):
         ad_data = json.loads(request.body)
-
+        if ad_data['is_published'] is True:
+            return JsonResponse({"error": "bad status"}, status=400)
         new_ad = Ad.objects.create(
             name=ad_data['name'],
             author=get_object_or_404(User, ad_data['author_id']),

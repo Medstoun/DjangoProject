@@ -48,6 +48,12 @@ class UserDetailSerializer(serializers.ModelSerializer):
         exclude = ['password']
 
 
+class AdCreateSerializer(serializers.Serializer):
+    class Meta:
+        model = Ad
+        fields = ('name', 'author', 'price', 'description', 'is_published', 'category')
+
+
 class UserUpdateSerializer(serializers.ModelSerializer):
     locations = serializers.SlugRelatedField(
         queryset=Location.objects.all(),
